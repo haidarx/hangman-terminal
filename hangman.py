@@ -7,10 +7,24 @@ import random
 import lives
 import getcharacter
 
+CURSOR_UP_ONE = '\x1b[1A'
+ERASE_LINE = '\x1b[2K'
 
+listWord= []
+try:
+    with open("wordlist.txt") as file:
+        for line in file:
+            listWord.append(line.rstrip())
 
-listWord = ["potato", "automobile", "hippopotamus", "binary"]
-usedChar = []
+except Exception as e:
+    print("Caught Exception: \n",e)
+    print("\nCaught error during loading of the word list. Using default minimal list...")
+    listWord = ["potato", "automobile", "hippopotamus", "binary"]
+
+def inputChar():
+    b = getcharacter.getch()
+    c = b.decode("utf-8")
+    return c
 
 def generateUnderscore(inputStr):
     st= []
@@ -43,6 +57,7 @@ def gameMain():
         restartPrompt()
         questionWord = random.choice(listWord)
         outputList = generateUnderscore(questionWord)
+        usedChar = []
         currentLives = 6
 
         while True:
@@ -62,24 +77,29 @@ def gameMain():
                 break
 
             # TO DO= Parse first
-            # c = getcharacter.getch()
+            # print("Your guess? ")
+            # c = inputChar()
+            
             c = input("Your guess? ")
+            
+            # print(CURSOR_UP_ONE + ERASE_LINE)
 
             if c in usedChar:
                 print(f"Character {c} is already used! -1 Live")
                 currentLives -= 1
-                time.sleep(1)
+                
             elif c in questionWord:
                 print("Correct guess!") 
                 replaceUnderscore(c, questionWord, outputList)
                 usedChar.append(c)
-                time.sleep(1)
+                
 
             else:
                 print("Wrong guess!")  
                 usedChar.append(c)
                 currentLives -= 1
-                time.sleep(1)
+            
+            time.sleep(1)
 
     return
 
